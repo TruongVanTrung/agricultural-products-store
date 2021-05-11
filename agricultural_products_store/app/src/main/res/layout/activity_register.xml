@@ -50,7 +50,7 @@
             android:drawableRight="@drawable/ic_user"
             android:backgroundTint="@color/xanh_luc"
             android:paddingRight="6dp"
-            android:inputType="text|number"
+            android:inputType="text"
             ></EditText>
         <TextView
             android:layout_width="match_parent"
