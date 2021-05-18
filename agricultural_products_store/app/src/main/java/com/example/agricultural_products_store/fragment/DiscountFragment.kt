@@ -1,11 +1,25 @@
 package com.example.agricultural_products_store.fragment
 
+import android.annotation.SuppressLint
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView
+import com.example.agricultural_products_store.Adapter.ViewPagerAdapter
+import com.example.agricultural_products_store.Model.ModelCart
+import com.example.agricultural_products_store.Model.ModelDetailPayment
 import com.example.agricultural_products_store.R
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.QuerySnapshot
+
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -22,6 +36,13 @@ class DiscountFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
+    private lateinit var auth: FirebaseAuth
+    private lateinit var fireStore : FirebaseFirestore
+    private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
+    var detail : ViewPagerAdapter?=null
+    private val collectionReference : CollectionReference = db.collection("detailPayment")
+    var cartAdapter : ViewPagerAdapter?=null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -30,12 +51,39 @@ class DiscountFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    @SuppressLint("WrongConstant")
+    override fun onCreateView(
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?,
+    ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_discount, container, false)
+        val view = inflater.inflate(R.layout.fragment_discount, container, false)
+
+        val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerViewPayment)
+        fireStore = FirebaseFirestore.getInstance()
+//        fireStore.collection("detailPayment").document("adQ0LtHJzfkcDvkV7emC").delete()
+//                .addOnSuccessListener {
+//                }
+
+//
+        val queryCart : Query = collectionReference
+        val firestoreRecyclerOptionsCart: FirestoreRecyclerOptions<ModelCart> = FirestoreRecyclerOptions.Builder<ModelCart>()
+                .setQuery(queryCart, ModelCart::class.java)
+                .build()
+
+        return view
     }
 
+//    override fun onStart() {
+//        super.onStart()
+//        cartAdapter!!.startListening()
+//    }
+//
+//    override fun onDestroy() {
+//        super.onDestroy()
+//        cartAdapter!!.stopListening()
+//    }
+//
     companion object {
         /**
          * Use this factory method to create a new instance of

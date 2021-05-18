@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragment.CategoryFragment"
-    android:background="@color/white"
-    >
+    tools:context=".DetailPaymentActivity">
+
     <RelativeLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
@@ -25,7 +25,7 @@
             android:layout_centerHorizontal="true"
             android:src="@drawable/iconlogo"
             android:layout_centerVertical="true"
-           ></ImageView>
+            ></ImageView>
         <ImageView
             android:layout_width="36dp"
             android:layout_height="36dp"
@@ -38,52 +38,35 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/text_category"
+        android:id="@+id/text1"
+        android:text="Xác nhận thanh toán món hàng"
+        android:textSize="24dp"
         android:layout_below="@+id/header"
-        android:layout_marginTop="9dp"
-        android:layout_marginLeft="12dp"
-        android:text="Danh mục"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="18dp"
         android:textColor="@color/xanh_luc"
-        android:textSize="24dp"
-        android:fontFamily="sans-serif-condensed"
         ></TextView>
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/relativeCategory"
-        android:layout_below="@+id/text_category"
-        android:layout_marginTop="5dp"
-        >
-        <androidx.recyclerview.widget.RecyclerView
-           android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/recyclerView_Category"
-            >
-            </androidx.recyclerview.widget.RecyclerView>
-        ></RelativeLayout>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/text_product"
-        android:layout_below="@+id/relativeCategory"
-        android:layout_marginTop="6dp"
-        android:layout_marginLeft="12dp"
-        android:text="Sản phẩm"
-        android:textColor="@color/xanh_luc"
-        android:textSize="24dp"
-        android:fontFamily="sans-serif-condensed"
-        ></TextView>
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/layoutShowProduct"
-        android:layout_below="@+id/text_product"
-        android:layout_marginTop="9dp"
-        ></RelativeLayout>
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/recyclerView_Product"
-        android:layout_below="@+id/layoutShowProduct"
+        android:id="@+id/recyclerpayment"
+        android:layout_below="@+id/text1"
+        android:layout_marginTop="9dp"
+        android:layout_marginLeft="6dp"
         ></androidx.recyclerview.widget.RecyclerView>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/recyclerpayment"
+        >
+        <Button
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:id="@+id/buttonSuccesFul"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="60dp"
+            android:text="Đã hoàn thành thanh toán"
+            ></Button>
+    </RelativeLayout>
+
 </RelativeLayout>

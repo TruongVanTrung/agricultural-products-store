@@ -10,7 +10,7 @@ import android.os.Handler as Handler
 
 class SplashActivity : AppCompatActivity() {
 
-    private val splash_time : Long = 500
+    private val splash_time : Long = 300
     lateinit var handler : Handler
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -49,6 +49,7 @@ class HomeFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+
     }
 
     @SuppressLint("WrongConstant")
@@ -57,9 +58,6 @@ class HomeFragment : Fragment() {
         val view : View = inflater.inflate(R.layout.fragment_home, container, false)
 
         val imageList = ArrayList<SlideModel>() // Create image list
-
-// imageList.add(SlideModel("String Url" or R.drawable)
-// imageList.add(SlideModel("String Url" or R.drawable, "title") You can add title
 
         imageList.add(SlideModel("https://cdn.tgdd.vn/Files/2017/11/14/1041538/ban-da-biet-cach-phan-biet-trai-thom-trai-khom-va-trai-dua-202104302123366561.jpg", "Trái dứa là sản phẩm bán chạy và được ưu tiên bán hàng nhất trên ứng dụng."))
         imageList.add(SlideModel("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRABoUlm2CMza9nXWml7KaJzMc_1xzHR8zygdpjSJY756GESmk7kFccfx22IyQSTWh5-I4&usqp=CAU", "Vì sức khoẻ gia đình, hãy chọn mua nông sản sạch."))

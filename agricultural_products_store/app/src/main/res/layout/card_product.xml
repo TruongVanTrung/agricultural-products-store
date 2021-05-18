@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="150dp"
+    android:layout_width="162dp"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardBackgroundColor="@color/white"
@@ -52,7 +52,7 @@
             android:id="@+id/KgCardProduct"
             android:text="1Kg"
             android:textStyle=""
-            android:textColor="@color/xanh_luc"
+            android:textColor="@color/black"
             android:textSize="18dp"
             android:fontFamily="sans-serif-condensed"
             android:layout_below="@+id/nameCardProduct"
@@ -74,10 +74,21 @@
             android:id="@+id/priceCardProduct"
             android:text="Giá"
             android:textStyle="bold"
-            android:textColor="@color/xanh_luc"
+            android:textColor="@color/black"
             android:textSize="18dp"
             android:fontFamily="sans-serif-condensed"
             android:layout_below="@+id/KgCardProduct"
             ></TextView>
+        <ImageButton
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/ic_add"
+            android:backgroundTint="@color/xanh_luc"
+            android:layout_marginRight="6dp"
+            android:layout_marginBottom="6dp"
+            android:id="@+id/addCart"
+            ></ImageButton>
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

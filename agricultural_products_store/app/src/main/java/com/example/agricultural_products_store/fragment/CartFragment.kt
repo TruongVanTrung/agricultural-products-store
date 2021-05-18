@@ -1,11 +1,29 @@
 package com.example.agricultural_products_store.fragment
 
+import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.agricultural_products_store.Adapter.CartAdapter
+import com.example.agricultural_products_store.DetailPaymentActivity
+import com.example.agricultural_products_store.Model.ModelCart
+import com.example.agricultural_products_store.OrderActivity
 import com.example.agricultural_products_store.R
+import com.example.agricultural_products_store.profile.ProfileUserActivity
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
+import java.util.HashMap
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -22,6 +40,12 @@ class CartFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
+    private lateinit var auth: FirebaseAuth
+    private lateinit var fireStore : FirebaseFirestore
+    private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private val collectionReference : CollectionReference = db.collection("carts")
+    var cartAdapter : CartAdapter?=null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -30,12 +54,56 @@ class CartFragment : Fragment() {
         }
     }
 
+    @SuppressLint("WrongConstant")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_cart, container, false)
+        val view = inflater.inflate(R.layout.fragment_cart, container, false)
+        fireStore = FirebaseFirestore.getInstance()
+        auth = FirebaseAuth.getInstance()
+        val currentUser = auth.currentUser
+        var uid = currentUser.uid
+
+        val recyclerViewCart = view.findViewById<RecyclerView>(R.id.recyclerViewCart)
+        val queryCart : Query = collectionReference.whereEqualTo("idUser",uid)
+        val firestoreRecyclerOptionsCart: FirestoreRecyclerOptions<ModelCart> = FirestoreRecyclerOptions.Builder<ModelCart>()
+                .setQuery(queryCart, ModelCart::class.java)
+                .build()
+        val payment = view.findViewById<Button>(R.id.submitPayment)
+//        val model = ModelCart()
+//        var dbb = db.collection("detailPayment").add(model)
+        payment.setOnClickListener {
+            activity?.startActivity(Intent(activity, OrderActivity::class.java))
+        }
+        cartAdapter = CartAdapter(firestoreRecyclerOptionsCart)
+        recyclerViewCart.layoutManager= LinearLayoutManager(activity, LinearLayout.VERTICAL, false)
+        recyclerViewCart.adapter= cartAdapter
+        val countProd = view.findViewById<TextView>(R.id.countProduct)
+        val countPri = view.findViewById<TextView>(R.id.countPrice)
+        fireStore.collection("countCart").document(uid)
+                .addSnapshotListener { value, error ->
+                    if (value?.exists()!!){
+                        var data =value?.data!!
+                        var countNumber= data.get("sumCart") as Number
+                        var countTotal = data.get("totalPrice") as Number
+                        var countTotall = countNumber.toInt()
+                        var countNumberr = countTotal.toFloat()
+                        countProd.setText(countTotall.toString())
+                        countPri.setText(countNumberr.toString())
+                    }
+                }
+
+        return  view
+    }
+    override fun onStart() {
+        super.onStart()
+        cartAdapter!!.startListening()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        cartAdapter!!.stopListening()
+    }
     companion object {
         /**
          * Use this factory method to create a new instance of
