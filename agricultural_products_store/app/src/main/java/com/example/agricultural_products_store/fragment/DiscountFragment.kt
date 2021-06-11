@@ -5,10 +5,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.agricultural_products_store.Adapter.CommentAdapter
 import com.example.agricultural_products_store.Adapter.ViewPagerAdapter
 import com.example.agricultural_products_store.Model.ModelCart
+import com.example.agricultural_products_store.Model.ModelComment
 import com.example.agricultural_products_store.Model.ModelDetailPayment
 import com.example.agricultural_products_store.R
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
@@ -19,6 +23,8 @@ import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.QuerySnapshot
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -40,8 +46,8 @@ class DiscountFragment : Fragment() {
     private lateinit var fireStore : FirebaseFirestore
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
     var detail : ViewPagerAdapter?=null
-    private val collectionReference : CollectionReference = db.collection("detailPayment")
-    var cartAdapter : ViewPagerAdapter?=null
+    private val collectionReferenceComment : CollectionReference = db.collection("comments")
+    var commentAdapter : CommentAdapter?=null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,19 +65,41 @@ class DiscountFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_discount, container, false)
 
-        val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerViewPayment)
         fireStore = FirebaseFirestore.getInstance()
-//        fireStore.collection("detailPayment").document("adQ0LtHJzfkcDvkV7emC").delete()
-//                .addOnSuccessListener {
-//                }
-
-//
-        val queryCart : Query = collectionReference
-        val firestoreRecyclerOptionsCart: FirestoreRecyclerOptions<ModelCart> = FirestoreRecyclerOptions.Builder<ModelCart>()
-                .setQuery(queryCart, ModelCart::class.java)
-                .build()
+        val sdf = SimpleDateFormat("yyyy.MM.dd ")
+        val currentDate = sdf.format(Date())
+        auth = FirebaseAuth.getInstance()
+        val currentUser = auth.currentUser
+        if (currentUser!=null) {
+            var uid = currentUser?.uid
+            val recyclerComment = view.findViewById<RecyclerView>(R.id.recyclerViewCMT)
+            val queryComment: Query = collectionReferenceComment.whereEqualTo("idUser", uid).orderBy("date", Query.Direction.DESCENDING).startAfter(currentDate)
+            val firestoreRecyclerOptionsComment: FirestoreRecyclerOptions<ModelComment> = FirestoreRecyclerOptions.Builder<ModelComment>()
+                    .setQuery(queryComment, ModelComment::class.java)
+                    .build()
+            commentAdapter = CommentAdapter(firestoreRecyclerOptionsComment)
+            recyclerComment.layoutManager = LinearLayoutManager(activity, LinearLayout.VERTICAL, false)
+            recyclerComment.adapter = commentAdapter
+        }
 
         return view
+    }
+    override fun onStart() {
+        super.onStart()
+        auth = FirebaseAuth.getInstance()
+        val currentUser = auth.currentUser
+        if (currentUser!=null) {
+            commentAdapter!!.startListening()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        auth = FirebaseAuth.getInstance()
+        val currentUser = auth.currentUser
+        if (currentUser!=null) {
+            commentAdapter!!.stopListening()
+        }
     }
 
 //    override fun onStart() {

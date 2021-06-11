@@ -10,7 +10,8 @@
         android:layout_height="match_parent"
         android:id="@+id/relative_main"
         android:layout_above="@+id/bottomBar"
-        ></RelativeLayout>
+        >
+    </RelativeLayout>
 
     <com.ismaeldivita.chipnavigation.ChipNavigationBar
         android:id="@+id/bottomBar"

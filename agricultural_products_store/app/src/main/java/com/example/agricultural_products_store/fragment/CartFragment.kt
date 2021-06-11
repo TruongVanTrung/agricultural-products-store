@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.agricultural_products_store.Adapter.CartAdapter
 import com.example.agricultural_products_store.DetailPaymentActivity
+import com.example.agricultural_products_store.LoginActivity
 import com.example.agricultural_products_store.Model.ModelCart
 import com.example.agricultural_products_store.OrderActivity
 import com.example.agricultural_products_store.R
@@ -44,7 +45,7 @@ class CartFragment : Fragment() {
     private lateinit var fireStore : FirebaseFirestore
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val collectionReference : CollectionReference = db.collection("carts")
-    var cartAdapter : CartAdapter?=null
+    private var cartAdapter : CartAdapter?=null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,47 +63,61 @@ class CartFragment : Fragment() {
         fireStore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
         val currentUser = auth.currentUser
-        var uid = currentUser.uid
-
-        val recyclerViewCart = view.findViewById<RecyclerView>(R.id.recyclerViewCart)
-        val queryCart : Query = collectionReference.whereEqualTo("idUser",uid)
-        val firestoreRecyclerOptionsCart: FirestoreRecyclerOptions<ModelCart> = FirestoreRecyclerOptions.Builder<ModelCart>()
-                .setQuery(queryCart, ModelCart::class.java)
-                .build()
+        if (currentUser!=null) {
+            var uid = currentUser.uid
+            val recyclerViewCart = view.findViewById<RecyclerView>(R.id.recyclerViewCart)
+            val queryCart: Query = collectionReference.whereEqualTo("idUser", uid)
+            val firestoreRecyclerOptionsCart: FirestoreRecyclerOptions<ModelCart> = FirestoreRecyclerOptions.Builder<ModelCart>()
+                    .setQuery(queryCart, ModelCart::class.java)
+                    .build()
+            cartAdapter = CartAdapter(firestoreRecyclerOptionsCart)
+            recyclerViewCart.layoutManager= LinearLayoutManager(activity, LinearLayout.VERTICAL, false)
+            recyclerViewCart.adapter= cartAdapter
+            val countProd = view.findViewById<TextView>(R.id.countProduct)
+            val countPri = view.findViewById<TextView>(R.id.countPrice)
+            fireStore.collection("countCart").document(uid)
+                    .addSnapshotListener { value, error ->
+                        if (value?.exists()!!){
+                            var data =value?.data!!
+                            var countNumber= data.get("sumCart") as Number
+                            var countTotal = data.get("totalPrice") as Number
+                            var countTotall = countNumber.toInt()
+                            var countNumberr = countTotal.toFloat()
+                            countProd.setText(countTotall.toString())
+                            countPri.setText(countNumberr.toString())
+                        }
+                    }
+        }
         val payment = view.findViewById<Button>(R.id.submitPayment)
 //        val model = ModelCart()
 //        var dbb = db.collection("detailPayment").add(model)
         payment.setOnClickListener {
-            activity?.startActivity(Intent(activity, OrderActivity::class.java))
+            val currentUser = auth.currentUser
+            if (currentUser != null) {
+                activity?.startActivity(Intent(activity, OrderActivity::class.java))
+            }else{
+                activity?.startActivity(Intent(activity, LoginActivity::class.java))
+            }
         }
-        cartAdapter = CartAdapter(firestoreRecyclerOptionsCart)
-        recyclerViewCart.layoutManager= LinearLayoutManager(activity, LinearLayout.VERTICAL, false)
-        recyclerViewCart.adapter= cartAdapter
-        val countProd = view.findViewById<TextView>(R.id.countProduct)
-        val countPri = view.findViewById<TextView>(R.id.countPrice)
-        fireStore.collection("countCart").document(uid)
-                .addSnapshotListener { value, error ->
-                    if (value?.exists()!!){
-                        var data =value?.data!!
-                        var countNumber= data.get("sumCart") as Number
-                        var countTotal = data.get("totalPrice") as Number
-                        var countTotall = countNumber.toInt()
-                        var countNumberr = countTotal.toFloat()
-                        countProd.setText(countTotall.toString())
-                        countPri.setText(countNumberr.toString())
-                    }
-                }
 
         return  view
     }
     override fun onStart() {
         super.onStart()
-        cartAdapter!!.startListening()
+        auth = FirebaseAuth.getInstance()
+        val currentUser = auth.currentUser
+        if (currentUser!=null) {
+            cartAdapter!!.startListening()
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        cartAdapter!!.stopListening()
+        auth = FirebaseAuth.getInstance()
+        val currentUser = auth.currentUser
+        if (currentUser!=null) {
+            cartAdapter!!.stopListening()
+        }
     }
     companion object {
         /**

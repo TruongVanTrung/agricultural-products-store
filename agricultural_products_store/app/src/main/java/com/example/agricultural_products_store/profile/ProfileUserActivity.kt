@@ -53,26 +53,30 @@ class ProfileUserActivity : AppCompatActivity() {
                     .get()
                     .addOnSuccessListener{ task ->
                             //var list = ArrayList<ModelUser>()
-                            if(task.exists()){
+                            if(task.exists()) {
                                 //for(data in task.result!!){
-                                    val data = task.data!!
-                                    //var email = data.get("email") as String
-                                    var image = data.get("image") as String
-                                    var local = data.get("local") as String
-                                    var phone = data.get("phone") as String
-                                    var sex = data.get("sex") as String
-                                    var username = data.get("username") as String
-                                    //list.add(ModelUser(data.get("email") as String,data.get("image") as String, data.get("local") as String,data.get("phone") as String,data.get("sex") as String,data.get("username") as String, ))
+                                val data = task.data!!
+                                //var email = data.get("email") as String
+                                var image = data.get("image") as String
+                                var local = data.get("local") as String
+                                var phone = data.get("phone") as String
+                                var sex = data.get("sex") as String
+                                var username = data.get("username") as String
+                                //list.add(ModelUser(data.get("email") as String,data.get("image") as String, data.get("local") as String,data.get("phone") as String,data.get("sex") as String,data.get("username") as String, ))
                                 edit_Email.setText(email)
                                 edit_Phone.setText(phone)
                                 edit_Local.setText(local)
                                 edit_Sex.setText(sex)
                                 edit_Name.setText(username)
                                 val image_user = findViewById<ImageView>(R.id.image_user)
-                                Picasso.get()
-                                    .load(image)
-                                    .placeholder (R.drawable.load)
-                                    .into(image_user)
+                                if (image.isEmpty()) {
+                                    image_user.setImageResource(R.drawable.avatar)
+                                } else{
+                                    Picasso.get()
+                                            .load(image)
+                                            .placeholder(R.drawable.load)
+                                            .into(image_user)
+                                    }
                             }else{
                                 Toast.makeText(this,"Vui lòng điền thông tin", Toast.LENGTH_LONG).show()
                                 edit_Email.setText(email)
@@ -94,8 +98,8 @@ class ProfileUserActivity : AppCompatActivity() {
         }
     }
     private fun uploadImage() {
-        if(filepath == null ){
-            Toast.makeText(this,"Người dùng chưa hoàn thành thông tin cá nhân",Toast.LENGTH_LONG).show()
+        if(filepath == null ) {
+        
         }
         else
         {
@@ -104,19 +108,6 @@ class ProfileUserActivity : AppCompatActivity() {
             pd.show()
             var reference = FirebaseStorage.getInstance().reference.child("image/")
             var file_name = reference.child("i"+filepath.lastPathSegment)
-//            var uri : Uri
-//            file_name.putFile(filepath).addOnSuccessListener { t ->
-//                t.metadata!!.reference!!.downloadUrl.addOnCompleteListener { task ->
-//                    uri =task.result!!
-//                    var url = uri.toString()
-//                    val edit = findViewById<EditText>(R.id.edit_email)
-//                    edit.setText(url)
-//                }
-//                pd.dismiss()
-//                //val uri = file_name.downloadUrl
-//            }.addOnFailureListener {
-//
-//            }
             file_name.putFile(filepath).addOnSuccessListener { task ->
                 var result = task.metadata!!.reference!!.downloadUrl
                 result.addOnSuccessListener {
@@ -146,7 +137,7 @@ class ProfileUserActivity : AppCompatActivity() {
                     user["sex"] = edit_sex
                     user["username"] =  edit_name
                     fireStore.collection("users").document(uid)
-                            .set(user)
+                            .update(user)
                             .addOnSuccessListener {
                                 fireStore.collection("users").document(uid)
                                         .get()
@@ -186,7 +177,8 @@ class ProfileUserActivity : AppCompatActivity() {
 
                             }
                     pd.dismiss()
-                }.addOnFailureListener {
+                }
+                        .addOnFailureListener {
                     Toast.makeText(this,"Người dùng chưa hoàn thành thông tin cá nhân",Toast.LENGTH_LONG).show()
                 }
             }.addOnFailureListener {

@@ -7,10 +7,11 @@ import android.os.Handler
 import android.view.View
 import android.widget.*
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import org.w3c.dom.Text
 
 class LoginActivity : AppCompatActivity() {
-
+    private lateinit var fireStore: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
     private lateinit var handler: Handler
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,11 +27,30 @@ class LoginActivity : AppCompatActivity() {
         val register = findViewById<TextView>(R.id.register)
 
         val currentUser = auth.currentUser
-        if (currentUser != null){
-            val intent = Intent(this,MainActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
+//            if (currentUser != null){
+//                fireStore = FirebaseFirestore.getInstance()
+//                auth = FirebaseAuth.getInstance()
+//                val currentUser = auth.currentUser
+//                var uid = currentUser?.uid
+//                fireStore.collection("users").document(uid.toString())
+//                        .get()
+//                        .addOnSuccessListener {
+//                            task ->
+//                            if(task.exists()){
+//                                    val progressBar = findViewById<ProgressBar>(R.id.progress_bar)
+//                                    progressBar.setVisibility(View.INVISIBLE)
+//                                    val intent = Intent(this,MainActivity::class.java)
+//                                    startActivity(intent)
+//                                    finish()
+//                                }else{
+//                                    val progressBar = findViewById<ProgressBar>(R.id.progress_bar)
+//                                    progressBar.setVisibility(View.INVISIBLE)
+//                                    auth.signOut()
+//                                    Toast.makeText(baseContext, "Đăng nhập thất bại.",
+//                                            Toast.LENGTH_SHORT).show()
+//                                }
+//                            }
+//                        }
 
         button_login.setOnClickListener {
             if (login_email.text.toString().isNotEmpty() &&  login_pass.text.toString().isNotEmpty()){
@@ -55,16 +75,36 @@ class LoginActivity : AppCompatActivity() {
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
+                    fireStore = FirebaseFirestore.getInstance()
+                    auth = FirebaseAuth.getInstance()
+                    val currentUser = auth.currentUser
+                    var uid = currentUser?.uid
+                    fireStore.collection("users").document(uid.toString())
+                            .get()
+                            .addOnSuccessListener {
+                                task ->
+                                if(task.exists()){
+                                    val data = task.data!!
+                                    var role = data.get("role") as Number
+                                    var rolee = role.toInt()
+                                    if(rolee == 1) {
+                                        val progressBar = findViewById<ProgressBar>(R.id.progress_bar)
+                                        progressBar.setVisibility(View.INVISIBLE)
+                                        val intent = Intent(this, MainActivity::class.java)
+                                        startActivity(intent)
+                                        finish()
+                                    }
+                                }else{
+                                    auth = FirebaseAuth.getInstance()
+                                    auth.signOut()
+
+                                }
+                            }
 //                    handler  = Handler()
 //                    handler.postDelayed({
 //                        startActivity(Intent(this,MainActivity::class.java))
 //                        finish()
 //                    },3000)
-                    val progressBar = findViewById<ProgressBar>(R.id.progress_bar)
-                    progressBar.setVisibility(View.INVISIBLE)
-                    val intent = Intent(this,MainActivity::class.java)
-                    startActivity(intent)
-                    finish()
                 }
                 else{
                     val progressBar = findViewById<ProgressBar>(R.id.progress_bar)

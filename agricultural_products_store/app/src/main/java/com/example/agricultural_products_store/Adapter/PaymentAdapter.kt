@@ -206,7 +206,7 @@ class PaymentAdapter(options: FirestoreRecyclerOptions<ModelCart>) :
                                     var data = task.data!!
                                     var pricee = data.get("totalPrice") as Number
                                     var priceee = pricee.toFloat()
-                                    val newTotal = priceee + price?.toFloat()!!
+                                    val newTotal = priceee + totalPrice?.toFloat()!!
 
                                     val addPayment : MutableMap<String, Any> = HashMap()
                                     addPayment["id"] = id
@@ -216,6 +216,7 @@ class PaymentAdapter(options: FirestoreRecyclerOptions<ModelCart>) :
                                     addPayment["date"] = currentDate
                                     addPayment["quantity"] = FieldValue.increment(1)
                                     addPayment["totalPrice"] = newTotal
+                                    addPayment["idUser"] = uid
                                     addPayment["status"] = 1
                                     fireStore.collection("payments").document(id)
                                         .update(addPayment)
@@ -273,6 +274,7 @@ class PaymentAdapter(options: FirestoreRecyclerOptions<ModelCart>) :
                                     addPayment["local"] = local
                                     addPayment["date"] = currentDate
                                     addPayment["quantity"] = 1
+                                    addPayment["idUser"] = uid
                                     addPayment["totalPrice"] = totalPrice?.toFloat()!!
                                     addPayment["status"] = 1
                                     fireStore.collection("payments").document(id)
@@ -347,6 +349,7 @@ class PaymentAdapter(options: FirestoreRecyclerOptions<ModelCart>) :
                                     addCountUserr["countOrder"] = 1
                                     addCountUserr["countTotalPrice"] = totalPrice?.toFloat()!!
                                     addCountUserr["date"] = currentDate
+                                    addCountUserr["Uid"] = uid
                                     fireStore.collection("countPriceUser")
                                         .document(uid)
                                         .set(addCountUserr)
@@ -373,6 +376,24 @@ class PaymentAdapter(options: FirestoreRecyclerOptions<ModelCart>) :
                                         }
                                 }
                             }
+                        fireStore.collection("products").document(idProduct.toString())
+                                .get()
+                                .addOnSuccessListener {
+                                    task ->
+                                    if (task.exists()){
+                                        var data = task.data!!
+                                        var amountTotal = data.get("amount") as Number
+                                        var amount = amountTotal.toInt()
+                                        var newAmount = amount-quantity?.toInt()!!
+                                        val newAmountt : MutableMap<String, Any> = HashMap()
+                                        newAmountt["amount"] = newAmount
+                                        fireStore.collection("products").document(idProduct.toString())
+                                                .update(newAmountt)
+                                                .addOnSuccessListener {
+
+                                                }
+                                    }
+                                }
                     }else{
 
                     }

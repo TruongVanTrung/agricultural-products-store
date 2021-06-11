@@ -25,7 +25,7 @@
 
     <item
         android:id="@+id/discount"
-        android:title="Khuyến mãi"
+        android:title="Bình luận "
         android:icon="@drawable/ic_discount"
         android:enabled="true"
         app:cnb_backgroundColor="@color/white"

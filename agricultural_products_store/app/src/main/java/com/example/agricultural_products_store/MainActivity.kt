@@ -60,17 +60,19 @@ class MainActivity : AppCompatActivity() {
         }
         auth = FirebaseAuth.getInstance()
         val currentUser = auth.currentUser
-        var uid = currentUser.uid
-        fireStore = FirebaseFirestore.getInstance()
-        fireStore.collection("countCart").document(uid)
-                .addSnapshotListener { value, error ->
-                    if (value?.exists()!!){
-                        var data = value.data!!
-                        var countCart = data.get("sumCart") as Number
-                        var count = countCart.toInt()
-                        bottomBar.showBadge(R.id.cart, count)
+        if (currentUser !=null) {
+            var uid = currentUser.uid
+            fireStore = FirebaseFirestore.getInstance()
+            fireStore.collection("countCart").document(uid)
+                    .addSnapshotListener { value, error ->
+                        if (value?.exists()!!) {
+                            var data = value.data!!
+                            var countCart = data.get("sumCart") as Number
+                            var count = countCart.toInt()
+                            bottomBar.showBadge(R.id.cart, count)
+                        }
                     }
-                }
+        }
 
 //        val logout = findViewById<Button>(R.id.button)
 //        logout.setOnClickListener {

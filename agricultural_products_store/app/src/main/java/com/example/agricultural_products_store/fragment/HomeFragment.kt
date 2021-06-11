@@ -1,11 +1,15 @@
 package com.example.agricultural_products_store.fragment
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.GridLayout
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.GridLayoutManager
@@ -13,11 +17,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.denzcoskun.imageslider.ImageSlider
 import com.denzcoskun.imageslider.models.SlideModel
+import com.example.agricultural_products_store.Adapter.CartAdapter
 import com.example.agricultural_products_store.Adapter.CategoryAdapter
 import com.example.agricultural_products_store.Adapter.ProductAdapter
 import com.example.agricultural_products_store.Model.ModelCategory
 import com.example.agricultural_products_store.Model.ModelProduct
+import com.example.agricultural_products_store.OrderActivity
 import com.example.agricultural_products_store.R
+import com.example.agricultural_products_store.SearchActivity
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
@@ -37,6 +45,7 @@ class HomeFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+
     var categoryAdapter : CategoryAdapter?=null
     var productAdapter : ProductAdapter?=null
     private val db:FirebaseFirestore= FirebaseFirestore.getInstance()
@@ -88,6 +97,10 @@ class HomeFragment : Fragment() {
         recyclerProduct.layoutManager=LinearLayoutManager(activity,LinearLayout.HORIZONTAL,false)
         recyclerProduct.adapter= productAdapter
 
+        val search = view.findViewById<EditText>(R.id.search)
+        search.setOnClickListener {
+            activity?.startActivity(Intent(activity, SearchActivity::class.java))
+        }
 
         return view
     }

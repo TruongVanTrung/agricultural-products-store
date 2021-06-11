@@ -8,10 +8,13 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import java.util.HashMap
 
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
+    private lateinit var fireStore : FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,10 +44,33 @@ class RegisterActivity : AppCompatActivity() {
             .addOnCompleteListener (this){ task ->
                 if(task.isSuccessful){
                     Log.d("Task Message", "createUserWithEmail:success")
+
+                    fireStore = FirebaseFirestore.getInstance()
+                    auth = FirebaseAuth.getInstance()
+                    val currentUser = auth.currentUser
+                    var uid = currentUser?.uid
+                    val addProfileUser : MutableMap<String, Any> = HashMap()
+                    addProfileUser["Uid"] = uid.toString()
+                    addProfileUser["email"] = email
+                    addProfileUser["image"] = ""
+                    addProfileUser["local"] = ""
+                    addProfileUser["phone"]= ""
+                    addProfileUser["sex"] = ""
+                    addProfileUser["username"] = ""
+                    addProfileUser["role"] = 1
+                    fireStore.collection("users").document(uid.toString())
+                            .set(addProfileUser)
+                            .addOnSuccessListener {
+                                Log.d("Task Message", "createUserWithEmail:success")
+                                //val user = auth.currentUser
+                                var intent = Intent(this, LoginActivity::class.java)
+                                startActivity(intent)
+                                finish()
+                            }
                     //val user = auth.currentUser
-                    var intent = Intent(this, LoginActivity::class.java)
-                    startActivity(intent)
-                    finish()
+//                    var intent = Intent(this, LoginActivity::class.java)
+//                    startActivity(intent)
+//                    finish()
                 }else{
                     Log.w("Task Message", "createUserWithEmail:failure", task.exception)
                     Toast.makeText(baseContext, "Đăng kí thất bại",

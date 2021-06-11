@@ -1,5 +1,6 @@
 package com.example.agricultural_products_store.Adapter
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,7 +9,10 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.example.agricultural_products_store.LoginActivity
+import com.example.agricultural_products_store.MainActivity
 import com.example.agricultural_products_store.Model.ModelCart
 import com.example.agricultural_products_store.Model.ModelProduct
 import com.example.agricultural_products_store.R
@@ -70,84 +74,93 @@ class ProductAdapter(options: FirestoreRecyclerOptions<ModelProduct>): Firestore
             fireStore = FirebaseFirestore.getInstance()
             auth = FirebaseAuth.getInstance()
             val currentUser = auth.currentUser
-            var uid = currentUser.uid
-            fireStore.collection("carts").document(idProduct.toString()).get()
-                    .addOnSuccessListener { task ->
-                        if (task.exists()){
-                            var data = task.data!!
+            if(currentUser!=null) {
+                var uid = currentUser.uid
+                fireStore.collection("carts").document(idProduct.toString()).get()
+                        .addOnSuccessListener { task ->
+                            if (task.exists()) {
+                                var data = task.data!!
 //                            var image = data.get("image") as String
 //                            var name = data.get("nameProduct") as String
-                            var pricee = data.get("price") as Number
-                            var quantity = data.get("quantity") as Number
+                                var pricee = data.get("price") as Number
+                                var quantity = data.get("quantity") as Number
 
-                            var price = pricee.toFloat()
-                            var quantityy = quantity.toFloat()
-                            var newSum = quantityy +1
-                            var total = price * newSum
-                            val updateCarts : MutableMap<String, Any> = HashMap()
-                            updateCarts["totalPrice"]= total
-                            updateCarts["quantity"] = newSum
-                            fireStore.collection("carts").document(idProduct.toString())
-                                    .update(updateCarts)
-                                    .addOnSuccessListener {
-                                    }
-                            fireStore.collection("countCart").document(uid).get()
-                                    .addOnSuccessListener {
-                                        if (it.exists()){
-                                            var data = it.data!!
-                                            var totalCartPrice =data.get("totalPrice") as Number
-                                            var totall = totalCartPrice.toFloat()
-                                            var newTotal = totall + price
-                                            val countCartt : MutableMap<String, Any> = HashMap()
-                                            countCartt["sumCart"] = FieldValue.increment(1)
-                                            countCartt["totalPrice"] = newTotal
-                                            fireStore.collection("countCart").document(uid)
-                                                    .update(countCartt)
-                                                    .addOnSuccessListener {
-                                                    }
-                                        }else{
-                                            val countCarttt : MutableMap<String, Any> = HashMap()
-                                            countCarttt["sumCart"] = 1
-                                            countCarttt["totalPrice"] = price
-                                            fireStore.collection("countCart").document(uid)
-                                                .set(countCarttt)
-                                                .addOnSuccessListener {
-                                                }
+                                var price = pricee.toFloat()
+                                var quantityy = quantity.toFloat()
+                                var newSum = quantityy + 1
+                                var total = price * newSum
+                                val updateCarts: MutableMap<String, Any> = HashMap()
+                                updateCarts["totalPrice"] = total
+                                updateCarts["quantity"] = newSum
+                                fireStore.collection("carts").document(idProduct.toString())
+                                        .update(updateCarts)
+                                        .addOnSuccessListener {
                                         }
-                                    }
-                        }else{
-                            val addCarts : MutableMap<String, Any> = HashMap()
-                            addCarts["idUser"] = uid
-                            addCarts["name"] = namee.toString()
-                            addCarts["idProduct"] = idProduct.toString()
-                            addCarts["image"] = imagee.toString()
-                            addCarts["totalPrice"]= priceProduct?.toFloat()!!
-                            addCarts["quantity"] = 1
-                            addCarts["price"] = priceProduct.toFloat()
-                            fireStore.collection("carts").document(idProduct.toString())
-                                    .set(addCarts)
-                                    .addOnSuccessListener {
-                                    }
-                            fireStore.collection("countCart").document(uid).get()
-                                    .addOnSuccessListener {
-                                        if (it.exists()){
-                                            var data = it.data!!
-                                            var totalCartPrice =data.get("totalPrice") as Number
-                                            var totall = totalCartPrice.toFloat()
-                                            var priceProd = priceProduct.toFloat()
-                                            var newTotal = totall + priceProd
-                                            val countCartt : MutableMap<String, Any> = HashMap()
-                                            countCartt["sumCart"] = FieldValue.increment(1)
-                                            countCartt["totalPrice"] = newTotal
-                                            fireStore.collection("countCart").document(uid)
-                                                    .update(countCartt)
-                                                    .addOnSuccessListener {
-                                                    }
+                                fireStore.collection("countCart").document(uid).get()
+                                        .addOnSuccessListener {
+                                            if (it.exists()) {
+                                                var data = it.data!!
+                                                var totalCartPrice = data.get("totalPrice") as Number
+                                                var totall = totalCartPrice.toFloat()
+                                                var newTotal = totall + price
+                                                val countCartt: MutableMap<String, Any> = HashMap()
+                                                countCartt["sumCart"] = FieldValue.increment(1)
+                                                countCartt["totalPrice"] = newTotal
+                                                fireStore.collection("countCart").document(uid)
+                                                        .update(countCartt)
+                                                        .addOnSuccessListener {
+                                                        }
+                                            } else {
+                                                val countCarttt: MutableMap<String, Any> = HashMap()
+                                                countCarttt["sumCart"] = 1
+                                                countCarttt["totalPrice"] = price
+                                                fireStore.collection("countCart").document(uid)
+                                                        .set(countCarttt)
+                                                        .addOnSuccessListener {
+                                                        }
+                                            }
                                         }
-                                    }
+                            } else {
+                                val addCarts: MutableMap<String, Any> = HashMap()
+                                addCarts["idUser"] = uid
+                                addCarts["name"] = namee.toString()
+                                addCarts["idProduct"] = idProduct.toString()
+                                addCarts["image"] = imagee.toString()
+                                addCarts["totalPrice"] = priceProduct?.toFloat()!!
+                                addCarts["quantity"] = 1
+                                addCarts["price"] = priceProduct.toFloat()
+                                fireStore.collection("carts").document(idProduct.toString())
+                                        .set(addCarts)
+                                        .addOnSuccessListener {
+                                        }
+                                fireStore.collection("countCart").document(uid).get()
+                                        .addOnSuccessListener {
+                                            if (it.exists()) {
+                                                var data = it.data!!
+                                                var totalCartPrice = data.get("totalPrice") as Number
+                                                var totall = totalCartPrice.toFloat()
+                                                var priceProd = priceProduct.toFloat()
+                                                var newTotal = totall + priceProd
+                                                val countCartt: MutableMap<String, Any> = HashMap()
+                                                countCartt["sumCart"] = FieldValue.increment(1)
+                                                countCartt["totalPrice"] = newTotal
+                                                fireStore.collection("countCart").document(uid)
+                                                        .update(countCartt)
+                                                        .addOnSuccessListener {
+                                                        }
+                                            }
+                                        }
+                            }
+
                         }
-
-                    }
+            }else{
+                val activity =view.context as AppCompatActivity
+                val loginActivity = LoginActivity()
+                var intent = Intent(activity,loginActivity::class.java)
+                activity.startActivity(intent)
+                //startActivity(Intent(activity, loginActivity::class.java))
+                //finish()
+            }
 
         }
     }

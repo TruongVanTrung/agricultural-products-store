@@ -12,7 +12,12 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.Agricultural_products_store">
-        <activity android:name=".DetailPaymentActivity"></activity>
+        <activity android:name=".DetaillReplyCommentActivity"></activity>
+        <activity android:name=".DetailReplyCommentActivity" />
+        <activity android:name=".DetailOrderActivity" />
+        <activity android:name=".PaymentActivity" />
+        <activity android:name=".SearchActivity" />
+        <activity android:name=".DetailPaymentActivity" />
         <activity android:name=".OrderActivity" />
         <activity android:name=".profile.ProfileUserActivity" />
         <activity android:name=".ProfileActivity" />

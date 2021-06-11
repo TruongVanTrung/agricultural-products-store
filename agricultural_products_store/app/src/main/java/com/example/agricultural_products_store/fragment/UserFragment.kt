@@ -12,6 +12,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import com.example.agricultural_products_store.LoginActivity
+import com.example.agricultural_products_store.PaymentActivity
 import com.example.agricultural_products_store.R
 import com.example.agricultural_products_store.profile.ProfileUserActivity
 import com.google.firebase.auth.FirebaseAuth
@@ -60,7 +61,6 @@ class UserFragment : Fragment() {
         val email_user = view.findViewById<TextView>(R.id.email)
         val image_user = view.findViewById<ImageView>(R.id.image_profile)
         auth = FirebaseAuth.getInstance()
-
         val currentUser = auth.currentUser
         if (currentUser != null){
             var email = currentUser.email
@@ -99,6 +99,10 @@ class UserFragment : Fragment() {
 //                 activity?.finish()
 //            }
         }
+        val order = view.findViewById<TextView>(R.id.donhang)
+        order.setOnClickListener {
+            activity?.startActivity(Intent(activity, PaymentActivity::class.java))
+        }
         val log_out = view.findViewById<Button>(R.id.logout)
         log_out.setOnClickListener {
             auth.signOut()
@@ -107,6 +111,7 @@ class UserFragment : Fragment() {
                 activity?.finish()
             }
         }
+
 
         return view
     }

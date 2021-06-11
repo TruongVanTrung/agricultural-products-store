@@ -1,16 +1,15 @@
 package com.example.agricultural_products_store.Adapter
 
-import android.os.Bundle
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.example.agricultural_products_store.DetaillReplyCommentActivity
 import com.example.agricultural_products_store.Model.ModelComment
-import com.example.agricultural_products_store.Model.ModelRate
 import com.example.agricultural_products_store.R
-import com.example.agricultural_products_store.fragment.DetailProductFragment
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.firestore.FirebaseFirestore
@@ -48,6 +47,15 @@ class CommentAdapter (options: FirestoreRecyclerOptions<ModelComment>): Firestor
         holder.rate.text=model.rate
         holder.date.text=model.date
         holder.content.text=model.title
+        val idComment = model.id
+        val content = model.title
+        holder.itemView.setOnClickListener { view ->
+            val activity =view.context as AppCompatActivity
+            val intent = Intent(activity, DetaillReplyCommentActivity::class.java)
+            intent.putExtra("idComment", idComment.toString())
+            intent.putExtra("title", content.toString())
+            activity.startActivity(intent)
+        }
     }
 
 
