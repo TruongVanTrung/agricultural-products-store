@@ -79,30 +79,29 @@ class DetailProductFragment : Fragment() {
         priceProduct.setText(priceProductt)
         Picasso.get().load(imageProductt).into(image)
         note.setText(noteProductt)
-//        var list  = ArrayList<Int>()
-//        val number = list.count {
-//            it==1
-////        }
 
-       // reference =database.getReference("comment")
         val username = view.findViewById<TextView>(R.id.userNameCMT)
         val comment = view.findViewById<EditText>(R.id.editCMT)
         val addCMT = view.findViewById<Button>(R.id.submitCMT)
         auth = FirebaseAuth.getInstance()
         val currentUser = auth.currentUser
         var uid = currentUser.uid
-        fireStore = FirebaseFirestore.getInstance()
-        fireStore.collection("users").document(uid)
-                .get()
-                .addOnSuccessListener { task ->
-                    if(task.exists()){
-                        val data = task.data!!
-                        var usernameStore = data.get("username") as String
-                        username.setText(usernameStore)
-                    }else {
+        if(currentUser != null){
+            fireStore = FirebaseFirestore.getInstance()
+            fireStore.collection("users").document(uid)
+                    .get()
+                    .addOnSuccessListener { task ->
+                        if(task.exists()){
+                            val data = task.data!!
+                            var usernameStore = data.get("username") as String
+                            username.setText(usernameStore)
+                        }else {
+                        }
+                    }.addOnFailureListener { exception ->
                     }
-                }.addOnFailureListener { exception ->
-                }
+        }else{
+        }
+
         val sdf = SimpleDateFormat("yyyy.MM.dd")
         val currentDate = sdf.format(Date())
 
